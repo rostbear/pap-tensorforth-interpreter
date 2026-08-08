@@ -1,25 +1,49 @@
-# Interprete TensorForth (C)
+# TensorForth – Stack-Based Language Interpreter
 
-**Gabriel Tavcar**  
-**Matricola: SM3201659**
+**A C-based interpreter for a stack-based programming language designed for tensor manipulation, with OpenMP parallelization for computationally intensive operations.**
 
-Questo progetto implementa l'interprete per il linguaggio stack-based TensorForth. L'applicazione esegue operazioni su tensori multidimensionali tramite uno stack dedicato, integrando funzionalità per la parallelizzazione e la gestione efficiente della memoria.
+## Description
 
-## Struttura dell'implementazione
-Ho suddiviso il codice in diversi moduli per mantenerlo modulare e pulito:
-- **tokenizer**: Analizza il codice sorgente carattere per carattere, estraendo i token (numeri, stringhe, operatori) e saltando spazi bianchi e commenti.
-- **stack**: Gestisce lo stack dei dati (che supporta sia tensori che stringhe), implementando le operazioni fondamentali come SWAP, DUP, OVER e DROP.
-- **tensor**: Contiene la logica matematica e di gestione dei tensori multidimensionali. Per prevenire memory leak ho implementato un sistema di reference count. Le operazioni matematiche più pesanti (come matmul o conv2d) sono state parallelizzate usando OpenMP. Inoltre, ho integrato la mappatura di memoria (mmap) per caricare i tensori salvati su file senza sovraccaricare la RAM.
-- **main**: Rappresenta l'entry point dell'applicazione. Legge il file sorgente, richiama il tokenizer nel ciclo di esecuzione e applica le varie operazioni sullo stack dei dati.
+This project implements an interpreter for **TensorForth**, a stack-based programming language inspired by Forth.
 
-## Compilazione ed Esecuzione
-Per compilare il progetto, posizionarsi nella cartella da terminale ed eseguire il comando:
+The interpreter processes programs from left to right using **postfix notation**. Operands, such as tensors and strings, are first pushed onto the stack, while operators consume the required operands and push the resulting values back onto the stack.
+
+The language is designed to operate on **single-precision floating-point tensors**, supporting both one-dimensional (1D) vectors and two-dimensional (2D) matrices. Computationally intensive operations are parallelized using **OpenMP** to improve performance.
+
+### Main Features
+
+* **Tensor Manipulation:** Generation of random tensors and support for element-wise arithmetic, logical, comparison, and selection operations.
+* **Advanced Mathematical Operations:** Support for matrix multiplication and 2D convolution using custom kernels, with stride 1 and zero padding.
+* **Stack Management:** Operations for duplicating, swapping, and dropping elements at the top of the stack. The interpreter optimizes memory usage by updating references instead of performing unnecessary allocations.
+* **Input/Output and Image Processing:** Support for reading and writing images in binary PGM (grayscale) format, with values normalized between 0 and 1.
+* **Memory-Mapped File Access:** Support for accessing files directly from disk using `mmap`, avoiding unnecessary memory copies.
+* **Parallel Execution:** OpenMP-based parallelization of computationally intensive operations, such as 2D convolution, to improve execution performance.
+
+## Technologies
+
+* **C**
+* **OpenMP** – parallel computing
+* **GNU Make** – build automation
+* **Linux** – development and execution environment
+
+## Compilation and Execution
+
+The project requires a **Linux environment**, such as Ubuntu, and uses a `Makefile` for compilation.
+
+To compile the project, run:
+
+```bash
 make
+```
 
-Questo comando compilerà i sorgenti generando l'eseguibile 'tensorforth'.
+To start the interpreter and run a TensorForth program, specify the source file as a command-line argument:
 
-Se si desidera ripulire i file oggetto (.o) e l'eseguibile generato, si può usare il comando:
-make clean
+```bash
+./tensorforth [source_file]
+```
 
-Per avviare l'interprete passando un file sorgente in input:
-./tensorforth <percorso_file_sorgente>
+## Project Documentation
+
+The complete language specifications, memory requirements, supported operations, and practical examples, such as image blurring, are available in the following PDF:
+
+[**Download the Project Documentation**](project_C.pdf)
